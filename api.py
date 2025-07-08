@@ -111,6 +111,11 @@ async def ask_question(payload: AskRequest):
     translated_result = None
     if detected_lang != 'en':
         translated_result = translate_back(result_text, detected_lang)
+        
+        # If the detected language is transliterated, use the transliterated response as primary
+        if detected_lang.endswith('_rom'):
+            result_text = translated_result
+            translated_result = None  # No need for separate translated field
 
     return AskResponse(
         detected_language=detected_lang,

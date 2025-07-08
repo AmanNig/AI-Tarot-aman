@@ -19,6 +19,126 @@ SUPPORTED_LANGUAGES = {
         'confidence_threshold': 0.4,
         'fallback': True
     },
+    'mr': {
+        'name': 'Marathi',
+        'confidence_threshold': 0.3,
+        'fallback': True
+    },
+    'mr_rom': {
+        'name': 'Romanized Marathi',
+        'confidence_threshold': 0.4,
+        'fallback': True
+    },
+    'bn': {
+        'name': 'Bengali',
+        'confidence_threshold': 0.3,
+        'fallback': True
+    },
+    'bn_rom': {
+        'name': 'Romanized Bengali',
+        'confidence_threshold': 0.4,
+        'fallback': True
+    },
+    'te': {
+        'name': 'Telugu',
+        'confidence_threshold': 0.3,
+        'fallback': True
+    },
+    'te_rom': {
+        'name': 'Romanized Telugu',
+        'confidence_threshold': 0.4,
+        'fallback': True
+    },
+    'ta': {
+        'name': 'Tamil',
+        'confidence_threshold': 0.3,
+        'fallback': True
+    },
+    'ta_rom': {
+        'name': 'Romanized Tamil',
+        'confidence_threshold': 0.4,
+        'fallback': True
+    },
+    'gu': {
+        'name': 'Gujarati',
+        'confidence_threshold': 0.3,
+        'fallback': True
+    },
+    'gu_rom': {
+        'name': 'Romanized Gujarati',
+        'confidence_threshold': 0.4,
+        'fallback': True
+    },
+    'kn': {
+        'name': 'Kannada',
+        'confidence_threshold': 0.3,
+        'fallback': True
+    },
+    'kn_rom': {
+        'name': 'Romanized Kannada',
+        'confidence_threshold': 0.4,
+        'fallback': True
+    },
+    'ml': {
+        'name': 'Malayalam',
+        'confidence_threshold': 0.3,
+        'fallback': True
+    },
+    'ml_rom': {
+        'name': 'Romanized Malayalam',
+        'confidence_threshold': 0.4,
+        'fallback': True
+    },
+    'pa': {
+        'name': 'Punjabi',
+        'confidence_threshold': 0.3,
+        'fallback': True
+    },
+    'pa_rom': {
+        'name': 'Romanized Punjabi',
+        'confidence_threshold': 0.4,
+        'fallback': True
+    },
+    'or': {
+        'name': 'Odia',
+        'confidence_threshold': 0.3,
+        'fallback': True
+    },
+    'or_rom': {
+        'name': 'Romanized Odia',
+        'confidence_threshold': 0.4,
+        'fallback': True
+    },
+    'as': {
+        'name': 'Assamese',
+        'confidence_threshold': 0.3,
+        'fallback': True
+    },
+    'as_rom': {
+        'name': 'Romanized Assamese',
+        'confidence_threshold': 0.4,
+        'fallback': True
+    },
+    'ur': {
+        'name': 'Urdu',
+        'confidence_threshold': 0.3,
+        'fallback': True
+    },
+    'ur_rom': {
+        'name': 'Romanized Urdu',
+        'confidence_threshold': 0.4,
+        'fallback': True
+    },
+    'ne': {
+        'name': 'Nepali',
+        'confidence_threshold': 0.3,
+        'fallback': True
+    },
+    'ne_rom': {
+        'name': 'Romanized Nepali',
+        'confidence_threshold': 0.4,
+        'fallback': True
+    },
     'es': {
         'name': 'Spanish',
         'confidence_threshold': 0.3,

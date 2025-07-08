@@ -100,17 +100,23 @@
 #         return filtered[:top_k]
 
 import pdfplumber
-import faiss
 import numpy as np
-from sentence_transformers import SentenceTransformer
 from langdetect import detect
 from initialize.config import PDF_PATHS
 from utils.context import ConversationContext
 
+# Simple text similarity function to replace sentence_transformers
+def simple_similarity(text1, text2):
+    """Simple text similarity using word overlap"""
+    words1 = set(text1.lower().split())
+    words2 = set(text2.lower().split())
+    intersection = words1.intersection(words2)
+    union = words1.union(words2)
+    return len(intersection) / len(union) if union else 0
+
 class TarotPDFEmbedder:
     def __init__(self, model_name="all-MiniLM-L6-v2"):
-        self.model = SentenceTransformer(model_name)
-        self.index = None
+        # Remove dependency on sentence_transformers
         self.paragraphs = []
 
     def extract_paragraphs(self):
@@ -126,12 +132,8 @@ class TarotPDFEmbedder:
         return paragraphs
 
     def build_vector_store(self):
-        print("🔄 Building FAISS index...")
+        print("🔄 Building simple text index...")
         self.extract_paragraphs()
-        embeddings = self.model.encode(self.paragraphs, show_progress_bar=True)
-        dimension = embeddings.shape[1]
-        self.index = faiss.IndexFlatL2(dimension)
-        self.index.add(np.array(embeddings).astype('float32'))
         print(f"✅ Indexed {len(self.paragraphs)} chunks from {len(PDF_PATHS)} PDFs.")
 
     def retrieve(self,
@@ -139,9 +141,18 @@ class TarotPDFEmbedder:
                  context: ConversationContext = None,
                  top_k: int = 3) -> list[str]:
 
-        query_embedding = self.model.encode([query]).astype('float32')
-        D, I = self.index.search(query_embedding, top_k)
-        docs = [self.paragraphs[i] for i in I[0]]
+        # Simple keyword-based retrieval
+        query_words = set(query.lower().split())
+        similarities = []
+        
+        for i, paragraph in enumerate(self.paragraphs):
+            similarity = simple_similarity(query, paragraph)
+            similarities.append((similarity, i))
+        
+        # Sort by similarity and get top_k
+        similarities.sort(reverse=True)
+        top_indices = [i for _, i in similarities[:top_k]]
+        docs = [self.paragraphs[i] for i in top_indices]
 
         if not context:
             return docs

@@ -13,12 +13,12 @@ from initialize.config import VECTOR_DB_DIR, MODEL_NAME
 _embedder = TarotPDFEmbedder(model_name="all-MiniLM-L6-v2")
 
 def get_card_meaning(card_name: str, k: int = 3) -> str:
-    # Ensure the FAISS index is built before retrieving
-    if _embedder.index is None:
+    # Ensure the index is built before retrieving
+    if not _embedder.paragraphs:
         try:
             _embedder.build_vector_store()
         except Exception as e:
-            return f"⚠️ Failed to build vector index: {str(e)}"
+            return f"⚠️ Failed to build text index: {str(e)}"
 
     try:
         results = _embedder.retrieve(card_name, top_k=k)

@@ -140,16 +140,33 @@ if not st.session_state.farewell:
 
                 # Display
                 st.markdown("### 🔍 TarotTara says:")
-                st.write(result_text)
-
-                # Translate back if needed
+                
+                # Handle transliterated languages properly
                 user_lang = st.session_state.language
                 if detected_lang != 'en':
-                    back = translate_back(result_text, detected_lang)
-                    st.write(f"**Result in {detected_lang}:**\n{back}")
+                    translated_result = translate_back(result_text, detected_lang)
+                    if detected_lang.endswith('_rom'):
+                        # For transliterated languages, show the transliterated response as primary
+                        st.write(translated_result)
+                        with st.expander("Original English"):
+                            st.write(result_text)
+                    else:
+                        # For native script languages, show English first, then translated
+                        st.write(result_text)
+                        st.write(f"**Result in {detected_lang}:**\n{translated_result}")
                 elif user_lang != 'en':
-                    back = translate_back(result_text, user_lang)
-                    st.write(f"**Result in {user_lang}:**\n{back}")
+                    translated_result = translate_back(result_text, user_lang)
+                    if user_lang.endswith('_rom'):
+                        # For transliterated languages, show the transliterated response as primary
+                        st.write(translated_result)
+                        with st.expander("Original English"):
+                            st.write(result_text)
+                    else:
+                        # For native script languages, show English first, then translated
+                        st.write(result_text)
+                        st.write(f"**Result in {user_lang}:**\n{translated_result}")
+                else:
+                    st.write(result_text)
 
                 st.markdown(f"⏱️ **Intent classification:** {intent_duration:.2f}s")
                 if not cached:

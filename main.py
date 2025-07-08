@@ -112,12 +112,20 @@ def main():
 
         # 8️⃣ Display
         print("\n🔍 TarotTara says:\n")
-        print(result_text)
-
-        # 9️⃣ Translate back if needed
+        
+        # If the detected language is transliterated, translate and display in transliterated format
         if detected_lang != 'en':
-            back = translate_back(result_text, detected_lang)
-            print(f"\nResult in {detected_lang}:\n{back}")
+            translated_result = translate_back(result_text, detected_lang)
+            if detected_lang.endswith('_rom'):
+                # For transliterated languages, show the transliterated response as primary
+                print(translated_result)
+                print(f"\n(Original English: {result_text})")
+            else:
+                # For native script languages, show English first, then translated
+                print(result_text)
+                print(f"\nResult in {detected_lang}:\n{translated_result}")
+        else:
+            print(result_text)
 
         # 🔟 Timing
         if not cached:
