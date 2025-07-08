@@ -16,6 +16,7 @@ langchain-groq==0.3.5
 
 # Streamlit for web interface
 streamlit==1.28.1
+setuptools==69.0.3
 
 # Database and caching
 redis==5.0.1
