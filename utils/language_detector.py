@@ -9,65 +9,214 @@ from os import getenv
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# def groq_invoke(prompt: str, max_tokens: int = 50, temperature: float = 0) -> str:
+#     """
+#     Invoke Groq API using the same approach as intent classification and tarot reader.
+#     Args:
+#         prompt: The prompt to send to the model
+#         max_tokens: Maximum tokens for response
+#         temperature: Temperature for response generation
+#     Returns:
+#         The model's response
+#     """
+#     api_url = "https://api.groq.com/openai/v1/chat/completions"
+#     api_key = getenv("GROQ_API_KEY")
+#     headers = {
+#         "Content-Type": "application/json",
+#         "Authorization": f"Bearer {api_key}"
+#     }
+#     data = {
+#         "model": "meta-llama/llama-4-scout-17b-16e-instruct",
+#         "messages": [
+#             {"role": "user", "content": prompt}
+#         ],
+#         "max_tokens": max_tokens,
+#         "temperature": temperature
+#     }
+#     try:
+#         response = requests.post(api_url, headers=headers, json=data)
+#         response.raise_for_status()
+#         return response.json()["choices"][0]["message"]["content"].strip()
+#     except Exception as e:
+#         logger.error(f"Groq API error: {e}")
+#         return "en"  # Default fallback
+
 def groq_invoke(prompt: str, max_tokens: int = 50, temperature: float = 0) -> str:
     """
-    Invoke Groq API using the same approach as intent classification and tarot reader.
-    
+    Invoke Groq API for language detection.
     Args:
         prompt: The prompt to send to the model
         max_tokens: Maximum tokens for response
         temperature: Temperature for response generation
-        
     Returns:
         The model's response
     """
     api_url = "https://api.groq.com/openai/v1/chat/completions"
     api_key = getenv("GROQ_API_KEY")
-    
     headers = {
         "Content-Type": "application/json",
         "Authorization": f"Bearer {api_key}"
     }
-    
     data = {
-        "model": "llama-3.3-70b-versatile",
+        "model": "meta-llama/llama-4-scout-17b-16e-instruct",
         "messages": [
             {"role": "user", "content": prompt}
         ],
         "max_tokens": max_tokens,
         "temperature": temperature
     }
-    
     try:
         response = requests.post(api_url, headers=headers, json=data)
         response.raise_for_status()
         return response.json()["choices"][0]["message"]["content"].strip()
+    except requests.exceptions.HTTPError as e:
+        if e.response is not None and e.response.status_code == 429:
+            logger.error("Groq API rate limit reached")
+            return "en"  # Default fallback
+        else:
+            logger.error(f"Groq API HTTP error: {e}")
+            return "en"  # Default fallback
     except Exception as e:
         logger.error(f"Groq API error: {e}")
         return "en"  # Default fallback
 
+# def detect_language_with_groq(text: str) -> Tuple[str, float]:
+#     """
+#     Detect language using Groq model with confidence scoring.
+#     Args:
+#         text: Input text to detect language for
+#     Returns:
+#         Tuple of (language_code, confidence_score)
+#     """
+#     if not text or not text.strip():
+#         return 'en', 0.0
+#     text = text.strip()
+#     if len(text) < 10:
+#         pass # No pattern detection here, only Groq
+#     prompt = f"""You are a language detection expert. Your job is to identify the language of the given text and respond with ONLY the ISO 639-1 language code.
+
+# Supported languages and their codes:
+# - English: en
+# - Hindi: hi
+# - Romanized Hindi (Hindi written in English letters): hi_rom
+# - Marathi: mr
+# - Romanized Marathi (Marathi written in English letters): mr_rom
+# - Bengali: bn
+# - Romanized Bengali (Bengali written in English letters): bn_rom
+# - Telugu: te
+# - Romanized Telugu (Telugu written in English letters): te_rom
+# - Tamil: ta
+# - Romanized Tamil (Tamil written in English letters): ta_rom
+# - Gujarati: gu
+# - Romanized Gujarati (Gujarati written in English letters): gu_rom
+# - Kannada: kn
+# - Romanized Kannada (Kannada written in English letters): kn_rom
+# - Malayalam: ml
+# - Romanized Malayalam (Malayalam written in English letters): ml_rom
+# - Punjabi: pa
+# - Romanized Punjabi (Punjabi written in English letters): pa_rom
+# - Odia: or
+# - Romanized Odia (Odia written in English letters): or_rom
+# - Assamese: as
+# - Romanized Assamese (Assamese written in English letters): as_rom
+# - Urdu: ur
+# - Romanized Urdu (Urdu written in English letters): ur_rom
+# - Nepali: ne
+# - Romanized Nepali (Nepali written in English letters): ne_rom
+# - Spanish: es
+# - French: fr
+# - German: de
+# - Italian: it
+# - Portuguese: pt
+# - Vietnamese: vi
+# - Indonesian: id
+# - Malay: ms
+# - Filipino: tl
+# - Thai: th
+# - Myanmar: my
+# - Khmer: km
+# - Lao: lo
+# - Sinhala: si
+
+# Examples:
+# Text: "Hello, how are you?"
+# Language: en
+
+# Text: "नमस्ते, कैसे हो आप?"
+# Language: hi
+
+# Text: "mai aj kya kru?"
+# Language: hi_rom
+
+# Text: "mi aaj kay karaycha?"
+# Language: mr_rom
+
+# Text: "ami aj ki korbo?"
+# Language: bn_rom
+
+# Text: "naanu ee em chestha?"
+# Language: te_rom
+
+# Text: "naan inru enna seiven?"
+# Language: ta_rom
+
+# Text: "hu aaj shu karish?"
+# Language: gu_rom
+
+# Text: "Hola, ¿cómo estás?"
+# Language: es
+
+# Text: "Bonjour, comment allez-vous?"
+# Language: fr
+
+# Text: "வணக்கம், எப்படி இருக்கிறீர்கள்?"
+# Language: ta
+
+# Text: "নমস্কার, কেমন আছেন?"
+# Language: bn
+
+# Text: "నమస్కారం, ఎలా ఉన్నారు?"
+# Language: te
+
+# Now detect the language of this text:
+# Text: "{text}"
+# Language:"""
+
+#     try:
+#         detected_lang = groq_invoke(prompt, max_tokens=10, temperature=0).strip().lower()
+        
+#         # Validate the detected language
+#         valid_languages = {
+#             'en', 'hi', 'hi_rom', 'mr', 'mr_rom', 'bn', 'bn_rom', 'te', 'te_rom', 'ta', 'ta_rom', 
+#             'gu', 'gu_rom', 'kn', 'kn_rom', 'ml', 'ml_rom', 'pa', 'pa_rom', 'or', 'or_rom', 
+#             'as', 'as_rom', 'ur', 'ur_rom', 'ne', 'ne_rom',
+#             'es', 'fr', 'de', 'it', 'pt', 'vi', 'id', 'ms', 'tl', 'th', 'my', 'km', 'lo', 'si'
+#         }
+        
+#         if detected_lang in valid_languages:
+#             confidence = _calculate_confidence(text, detected_lang)
+#             return detected_lang, confidence
+#         else:
+#             # Fallback to pattern detection
+#             return _detect_by_patterns(text)
+            
+#     except Exception as e:
+#         logger.error(f"Language detection failed: {e}")
+#         return _detect_by_patterns(text)
+
 def detect_language_with_groq(text: str) -> Tuple[str, float]:
     """
     Detect language using Groq model with confidence scoring.
-    
     Args:
         text: Input text to detect language for
-        
     Returns:
         Tuple of (language_code, confidence_score)
     """
     if not text or not text.strip():
         return 'en', 0.0
-    
     text = text.strip()
-    
-    # For very short text, use pattern detection first
     if len(text) < 10:
-        pattern_result = _detect_by_patterns(text)
-        if pattern_result[1] > 0.7:
-            return pattern_result
-    
-    # Use Groq for language detection
+        pass # No pattern detection here, only Groq
     prompt = f"""You are a language detection expert. Your job is to identify the language of the given text and respond with ONLY the ISO 639-1 language code.
 
 Supported languages and their codes:
@@ -172,9 +321,7 @@ Language:"""
             confidence = _calculate_confidence(text, detected_lang)
             return detected_lang, confidence
         else:
-            # Fallback to pattern detection
             return _detect_by_patterns(text)
-            
     except Exception as e:
         logger.error(f"Language detection failed: {e}")
         return _detect_by_patterns(text)

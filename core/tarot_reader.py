@@ -178,16 +178,24 @@ def groq_invoke(prompt: str) -> str:
         "Authorization": f"Bearer {api_key}"
     }
     data = {
-        "model": "llama-3.3-70b-versatile",
+        "model": "meta-llama/llama-4-scout-17b-16e-instruct",
         "messages": [
             {"role": "user", "content": prompt}
         ],
         "max_tokens": 3072,
         "temperature": 0.7
     }
-    response = requests.post(api_url, headers=headers, json=data)
-    response.raise_for_status()
-    return response.json()["choices"][0]["message"]["content"].strip()
+    try:
+        response = requests.post(api_url, headers=headers, json=data)
+        response.raise_for_status()
+        return response.json()["choices"][0]["message"]["content"].strip()
+    except requests.exceptions.HTTPError as e:
+        if e.response is not None and e.response.status_code == 429:
+            return "The system is busy (rate limit reached). Please try again in a minute."
+        else:
+            raise
+    except Exception as e:
+        return f"An error occurred: {str(e)}"
 
 def _build_history_block(history: List[Dict[str, Any]]) -> str:
     lines = []
